@@ -127,7 +127,6 @@ in {
       kernelPatches = [
         kernelPatches.bridge_stp_helper
         kernelPatches.request_key_helper
-        kernelPatches.CVE-2023-32233
       ];
     };
 
@@ -504,6 +503,8 @@ in {
     tp_smapi = callPackage ../os-specific/linux/tp_smapi { };
 
     turbostat = callPackage ../os-specific/linux/turbostat { };
+
+    trelay = callPackage ../os-specific/linux/trelay { };
 
     usbip = callPackage ../os-specific/linux/usbip { };
 

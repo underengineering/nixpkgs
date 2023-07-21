@@ -29,14 +29,14 @@
 with python3Packages;
 buildPythonApplication rec {
   pname = "kitty";
-  version = "0.29.0";
+  version = "0.29.1";
   format = "other";
 
   src = fetchFromGitHub {
     owner = "kovidgoyal";
     repo = "kitty";
     rev = "refs/tags/v${version}";
-    hash = "sha256-FTitj43RFCNvSWInXHALyIljfcBBkaq/XI1ZA1k0glk=";
+    hash = "sha256-C7Km98N/ER+IJ964V+BFkVF8N7uRmraPIpHn8yJtb/Q=";
   };
 
   goModules = (buildGoModule {
@@ -99,8 +99,13 @@ buildPythonApplication rec {
     ./disable-test_ssh_bootstrap_with_different_launchers.patch
   ];
 
-  # Causes build failure due to warning
-  hardeningDisable = lib.optional stdenv.cc.isClang "strictoverflow";
+  hardeningDisable = [
+    # causes redefinition of _FORTIFY_SOURCE
+    "fortify3"
+  ] ++ lib.optionals stdenv.cc.isClang [
+    # Causes build failure due to warning
+    "strictoverflow"
+  ];
 
   CGO_ENABLED = 0;
   GOFLAGS = "-trimpath";
