@@ -145,7 +145,7 @@ assert withUkify -> withEfi;
 let
   wantCurl = withRemote || withImportd;
   wantGcrypt = withResolved || withImportd;
-  version = "253.5";
+  version = "253.6";
 
   # Bump this variable on every (major) version change. See below (in the meson options list) for why.
   # command:
@@ -162,7 +162,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "systemd";
     repo = "systemd-stable";
     rev = "v${version}";
-    hash = "sha256-B3A9AvpfZ8SYsiZvHnWO4RHs1/6EdczWF2NmrSqxQ7c=";
+    hash = "sha256-LZs6QuBe23W643bTuz+MD2pzHiapsBJBHoFXi/QjzG4=";
   };
 
   # On major changes, or when otherwise required, you *must* reformat the patches,
@@ -190,13 +190,6 @@ stdenv.mkDerivation (finalAttrs: {
     ./0017-core-don-t-taint-on-unmerged-usr.patch
     ./0018-tpm2_context_init-fix-driver-name-checking.patch
     ./0019-bootctl-also-print-efi-files-not-owned-by-systemd-in.patch
-
-    # https://github.com/systemd/systemd/pull/28000
-    (fetchpatch {
-      name = "fix-service-exit";
-      url = "https://github.com/systemd/systemd/commit/5f7f82ba625ee48d662c1f0286f44b8b0918d05d.patch";
-      sha256 = "sha256-pFRXpZjeVl5ZG/mOjHEuMg9zXq4Orwvdp+/LYTbR09I=";
-    })
   ] ++ lib.optional stdenv.hostPlatform.isMusl (
     let
       oe-core = fetchzip {
@@ -517,8 +510,8 @@ stdenv.mkDerivation (finalAttrs: {
 
     "-Dsulogin-path=${util-linux.login}/bin/sulogin"
     "-Dnologin-path=${util-linux.login}/bin/nologin"
-    "-Dmount-path=${util-linux.mount}/bin/mount"
-    "-Dumount-path=${util-linux.mount}/bin/umount"
+    "-Dmount-path=${lib.getOutput "mount" util-linux}/bin/mount"
+    "-Dumount-path=${lib.getOutput "mount" util-linux}/bin/umount"
     "-Dcreate-log-dirs=false"
 
     # Use cgroupsv2. This is already the upstream default, but better be explicit.
@@ -569,8 +562,8 @@ stdenv.mkDerivation (finalAttrs: {
             "man/systemd-makefs@.service.xml"
           ];
         }
-        { search = "/sbin/swapon"; replacement = "${util-linux.swap}/sbin/swapon"; where = [ "src/core/swap.c" "src/basic/unit-def.h" ]; }
-        { search = "/sbin/swapoff"; replacement = "${util-linux.swap}/sbin/swapoff"; where = [ "src/core/swap.c" ]; }
+        { search = "/sbin/swapon"; replacement = "${lib.getOutput "swap" util-linux}/sbin/swapon"; where = [ "src/core/swap.c" "src/basic/unit-def.h" ]; }
+        { search = "/sbin/swapoff"; replacement = "${lib.getOutput "swap" util-linux}/sbin/swapoff"; where = [ "src/core/swap.c" ]; }
         {
           search = "/bin/echo";
           replacement = "${coreutils}/bin/echo";
